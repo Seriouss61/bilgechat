@@ -36,7 +36,7 @@
     input.value = "";
 
     // Burada server adresini Render URL'nizle güncellemeyi unutmayın!
-    const response = await fetch("https://bilgechat.onrender.com//api/chat", {
+    const response = await fetch("https://bilgechat.onrender.com/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ message: msg })
