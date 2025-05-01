@@ -29,20 +29,6 @@ app.post("/api/chat", async (req, res) => {
       }),
     });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error("OpenAI API hatası:", errorText);
-      return res.status(500).json({ reply: "OpenAI API hatası oluştu." });
-    }
-
-    const data = await response.json();
-    const reply = data.choices?.[0]?.message?.content || "Cevap alınamadı.";
-    res.json({ reply });
-
-  } catch (err) {
-    console.error("Sunucu hatası:", err);
-    res.status(500).json({ reply: "Sunucu hatası oluştu." });
-  }
 });
 
 const PORT = process.env.PORT || 3000;
