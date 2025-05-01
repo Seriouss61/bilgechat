@@ -1,134 +1,150 @@
-
 <!DOCTYPE html>
 <html lang="tr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Bilge - Türk Yapay Zekâ Asistanı</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
+    * { box-sizing: border-box; }
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #f4f4f4;
       margin: 0;
-      padding: 0;
+      font-family: "Segoe UI", sans-serif;
+      background: linear-gradient(to right, #ece9e6, #ffffff);
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
-
-    .chat-container {
+    #chatbox {
+      width: 80%;
+      max-width: 960px;
+      height: 90vh;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
       display: flex;
       flex-direction: column;
-      height: 100vh;
-      max-width: 800px;
-      margin: 0 auto;
-      background: #ffffff;
+      overflow: hidden;
     }
-
-    header {
-      background-color: #cc0000;
-      color: white;
-      padding: 15px;
+    .flag {
+      width: 50px;
+      display: block;
+      margin: 16px auto 0;
+    }
+    h2 {
       text-align: center;
-      font-size: 18px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
+      color: #cc0000;
+      margin: 10px 0 0 0;
+      font-size: 24px;
     }
-
-    header img {
-      width: 30px;
-    }
-
     #messages {
       flex: 1;
       overflow-y: auto;
-      padding: 15px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
+      padding: 20px;
+      font-size: 16px;
     }
-
     .msg {
-      padding: 10px 15px;
-      border-radius: 10px;
-      max-width: 80%;
-      word-wrap: break-word;
-      font-size: 15px;
+      margin: 12px 0;
+      line-height: 1.6;
     }
-
     .user {
-      align-self: flex-end;
-      background: #d9f1ff;
-      color: #0077c2;
+      text-align: right;
+      color: #0056b3;
     }
-
     .bot {
-      align-self: flex-start;
-      background: #f1f1f1;
-      color: #333;
+      text-align: left;
+      color: #222;
     }
-
-    #input-area {
+    .input-area {
       display: flex;
-      padding: 10px;
+      padding: 16px;
       border-top: 1px solid #ddd;
-      background: #fafafa;
+      background-color: #fafafa;
     }
-
-    #input {
+    textarea {
       flex: 1;
-      padding: 10px;
-      border-radius: 20px;
+      resize: none;
+      padding: 12px 16px;
+      border-radius: 8px;
       border: 1px solid #ccc;
       font-size: 16px;
+      line-height: 1.4;
+    }
+    button {
+      background-color: #cc0000;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 48px;
+      height: 48px;
+      margin-left: 12px;
+      font-size: 20px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #a00000;
+    }
+    @media (max-width: 768px) {
+      #chatbox {
+        width: 100%;
+        height: 100vh;
+        border-radius: 0;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="chat-container">
-    <header>
-      <img src="https://upload.wikimedia.org/wikipedia/commons/b/b4/Flag_of_Turkey.svg" alt="TR Bayrağı">
-      🤖 Bilge - Türk Yapay Zekâ Asistanı
-    </header>
-    <div id="messages"></div>
-    <div id="input-area">
-      <input type="text" id="input" placeholder="Mesaj yazın ve Enter'a basın..." autocomplete="off" />
-    </div>
+
+<div id="chatbox">
+  <img src="https://upload.wikimedia.org/wikipedia/commons/b/b4/Flag_of_Turkey.svg" alt="TR Bayrağı" class="flag">
+  <h2> Bilge - Türk Yapay Zekâ Asistanı</h2>
+  <div id="messages"></div>
+  <div class="input-area">
+    <textarea id="input" rows="1" placeholder="Bir şeyler yaz..." oninput="autoResize(this)"></textarea>
+    <button onclick="sendMessage()">➤</button>
   </div>
+</div>
 
-  <script>
-    const input = document.getElementById("input");
-    const messages = document.getElementById("messages");
+<script>
+  const input = document.getElementById("input");
+  const messages = document.getElementById("messages");
 
-    input.addEventListener("keydown", async function (e) {
-      if (e.key === "Enter") {
-        const msg = input.value.trim();
-        if (!msg) return;
+  input.addEventListener("keydown", function(e) {
+    if (e.key === "Enter" && !e.shiftKey && !isMobile()) {
+      e.preventDefault();
+      sendMessage();
+    }
+  });
 
-        appendMessage("user", msg);
-        input.value = "";
+  function isMobile() {
+    return /Mobi|Android|iPhone/i.test(navigator.userAgent);
+  }
 
-        try {
-          const response = await fetch("/api/chat", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ message: msg })
-          });
+  function autoResize(textarea) {
+    textarea.style.height = "auto";
+    textarea.style.height = textarea.scrollHeight + "px";
+  }
 
-          const data = await response.json();
-          appendMessage("bot", data.reply);
-        } catch (error) {
-          appendMessage("bot", "Sunucu hatası oluştu.");
-        }
-      }
+  async function sendMessage() {
+    const msg = input.value.trim();
+    if (!msg) return;
+
+    messages.innerHTML += `<div class="msg user"><strong>Sen:</strong> ${msg}</div>`;
+    input.value = "";
+    autoResize(input);
+
+    const response = await fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: msg })
     });
 
-    function appendMessage(sender, text) {
-      const div = document.createElement("div");
-      div.className = `msg ${sender}`;
-      div.innerHTML = `<strong>${sender === "user" ? "Sen" : "Bilge"}:</strong> ${text}`;
-      messages.appendChild(div);
-      messages.scrollTop = messages.scrollHeight;
-    }
-  </script>
+    const data = await response.json();
+    messages.innerHTML += `<div class="msg bot"><strong>Bilge:</strong> ${data.reply}</div>`;
+    messages.scrollTop = messages.scrollHeight;
+  }
+</script>
+
 </body>
 </html>
