@@ -19,9 +19,9 @@ app.post("/api/chat", async (req, res) => {
     "Authorization": `Bearer ${process.env.GROQ_API_KEY}`,
   },
   body: JSON.stringify({
-    model: "mixtral-8x7b-32768",
-    messages: [{ role: "user", content: userMessage }],
-    temperature: 0.7,
+  model: "mistral-saba-24b",
+  messages: [{ role: "user", content: userMessage }],
+  temperature: 0.7,
       }),
     });
 
