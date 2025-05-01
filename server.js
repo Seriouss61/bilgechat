@@ -18,10 +18,10 @@ app.post("/api/chat", async (req, res) => {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${process.env.GROQ_API_KEY}`,
       },
-      body: JSON.stringify({
-        model: "mistralai/mixtral-8x7b",
-        messages: [{ role: "user", content: userMessage }],
-        temperature: 0.7,
+     body: JSON.stringify({
+    model: "openai/gpt-3.5-turbo",
+    messages: [{ role: "user", content: userMessage }],
+    temperature: 0.7,
       }),
     });
 
