@@ -16,7 +16,7 @@ app.post("/api/chat", async (req, res) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        console.log("Anahtar:", process.env.GROQ_API_KEY);
+        console.log(`Anahtar: ${process.env.GROQ_API_KEY}`);
       },
      body: JSON.stringify({
     model: "openai/gpt-3.5-turbo",
