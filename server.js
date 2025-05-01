@@ -12,16 +12,16 @@ app.post("/api/chat", async (req, res) => {
   const userMessage = req.body.message;
 
   try {
-    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
-      },
-      body: JSON.stringify({
-        model: "openai/gpt-3.5-turbo",
-        messages: [{ role: "user", content: userMessage }],
-        temperature: 0.7,
+ const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${process.env.GROQ_API_KEY}`,
+  },
+  body: JSON.stringify({
+    model: "mixtral-8x7b-32768",
+    messages: [{ role: "user", content: userMessage }],
+    temperature: 0.7,
       }),
     });
 
