@@ -27,9 +27,6 @@ app.post("/api/chat", async (req, res) => {
         messages: [{ role: "user", content: userMessage }],
         temperature: 0.7,
       }),
-    });
-
-});
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
